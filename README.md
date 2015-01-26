@@ -471,6 +471,55 @@ fi
 # Script EOF
 ```
 
+UCI
+------------------
+设置lan ip(即访问路由的ip) 
+Shell代码  
+uci set network.lan.ipaddr=[lan ip]  
+ 
+使用pppoe设置 
+Shell代码  
+uci set network.wan.proto=pppoe    //设置wan口类型为pppoe  
+uci set network.wan.username=[上网帐户]  
+uci set network.wan.password=[上网密码]    //这两行设置pppoe用户名和密码  
+ 
+如果要挂在上级路由下面,就需要进行下面的设置 
+Shell代码  
+uci set network.wan.proto=none    //关掉wan  
+uci set network.lan.gateway=[上级路由ip]    //网关指向上级路由  
+uci set network.lan.dns=[上级路由ip]    //dns指向上级路由  
+uci set dhcp.lan.ignore=1    //关掉lan的dhcp  
+ 
+最后对无线网络进行配置 
+Shell代码  
+uci set wireless.@wifi-device[0].disabled=0    //打开无线  
+uci set wireless.@wifi-device[0].txpower=17    //设置功率为17dbm 太高会烧无线模块  
+uci set wireless.@wifi-device[0].channel=6    //设置无线信道为6  
+uci set wireless.@wifi-iface[0].mode=ap    //设置无线模式为ap  
+uci set wireless.@wifi-iface[0].ssid=[自己设置SSID]    //设置无线SSID  
+uci set wireless.@wifi-iface[0].network=lan    //无线链接到lan上  
+uci set wireless.@wifi-iface[0].encryption=psk2    //设置加密为WPA2-PSK  
+uci set wireless.@wifi-iface[0].key=[密码]    //设置无线密码  
+ 
+提交应用配置 
+Shell代码  
+uci commit    //应用  
+/etc/init.d/network restart    //重启网络服务  
+ 
+ 
+安装luci管理界面 
+Shell代码  
+opkg update // 更新软件列表  
+opkg list-installed // 查看已安装软件  
+opkg install luci // 安装LUCI  
+opkg install luci-i18n-chinese // 支持中文  
+ 
+即可完成LUCI的安装。 
+输入以下命令开启支持web服务的uhttpd，并设置其为自启动： 
+Shell代码  
+/etc/init.d/uhttpd enable # 开机自启动  
+/etc/init.d/uhttpd start # 启动uhttpd  
+
 linux内核部分相关在:
 
 `build_dir/target-mipsel_24kec+dsp_uClibc-0.9.33.2/linux-ramips_mt7620n/linux-3.14.18/arch/mips/kernel`
